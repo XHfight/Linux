@@ -49,7 +49,7 @@ int main()
 				start++;
 			}
 		}
-		argv[argvIndex - 1] = NULL; //为什么下标要减一
+		argv[argvIndex - 1] = NULL; //为什么下标要减一? 因为isspace函数遇到\n,\t,\r,\v,\f都会返回非零
 	
 		//创建子进程
 		pid_t id = fork();
