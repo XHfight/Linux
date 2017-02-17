@@ -19,7 +19,7 @@ union semun
 };
 
 int CreateSemSet(int nsems);
-int GetSemSet(int nsems);
+int GetSemSet();
 int P(int semid, int semnum);
 int V(int semid, int semnum);
 int DestorySemSet(int semid);

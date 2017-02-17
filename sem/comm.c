@@ -20,12 +20,12 @@ static int CommSemSet(int nsems,int flag)
 
 int CreateSemSet(int nsems)
 {
-	return CommSemSet(nsems, IPC_CREAT | IPC_EXCL | 0x666);
+	return CommSemSet(nsems, IPC_CREAT | IPC_EXCL | 0666);
 }
 
-int GetSemSet(int nsems)
+int GetSemSet()
 {
-	return CommSemSet(nsems, IPC_CREAT);
+	return CommSemSet(0, IPC_CREAT);//获取的时候可以不关注nsems；参数二还可以设置成0；
 }
 
 int InitSemSet(int semid, int semnum)

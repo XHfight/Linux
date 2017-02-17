@@ -14,7 +14,7 @@ int main()
 	pid_t id = fork();
 	if(id == 0)//clild
 	{
-		int semid = GetSemSet(1);
+		int semid = GetSemSet();
 		while(1)
 		{
 			P(semid, 0);
@@ -43,6 +43,7 @@ int main()
 
 		wait(NULL);
 	}
+
 	DestorySemSet(semid);
 	return 0;
 }
