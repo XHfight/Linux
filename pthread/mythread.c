@@ -37,7 +37,11 @@ void* Thread_1(void* arg)
 //		printf("pthread cancel退出主线程成功\n");
 //	}
 
-	pthread_exit((void*)222); //退出方式三
+//	pthread_exit((void*)222); //退出方式三
+	while(1)
+	{
+		printf("hello\n");
+	}
 
 	printf("end falied\n");
 }
@@ -58,12 +62,14 @@ int main()
 	printf("main thread is runing, pid:%d, ppid:%d threadid:%lu\n", \
 			getpid(), getppid(), pthread_self());
 	
+	sleep(2);
+	pthread_cancel(id); //线程终止方式二:主线程终止新线程
 
 	if(pthread_join(id, (void**)&retval) == 0)
 	{
 		printf("wait success\n");
 	}
 
-	printf("thread_1 return val:%d\n", retval);
+	//printf("thread_1 return val:%d\n", retval);
 	return 0;
 }
