@@ -24,18 +24,12 @@ void* Thread_1(void* arg)
 			getpid(), getppid(), pthread_self());
 
 //	return (void*)23;   //线程终止方式一
-//	int ret = pthread_cancel(pthread_self()); //线程终止方式二：pthread_cancel可以终止自己
-//	if(ret == 0)
-//	{
-//		printf("pthread cancel退出自己成功\n");
-//	}
+//	int ret = pthread_cancel(pthread_self()); //线程终止方式二：pthread_cancel不可以终止自己
+//如果thread线程被别的线程调⽤用pthread_cancel异常终掉,value_ptr所指向的单元⾥里存放 的是常数PTHREAD_CANCELED(-1)
+	
 	
 //	pthread_t mid = *((pthread_t*)arg);   //arg-->&pthread_t
-//	int ret = pthread_cancel(mid); //线程终止方式二：pthread_cancel可以终止自己
-//	if(ret == 0)
-//	{
-//		printf("pthread cancel退出主线程成功\n");
-//	}
+//	int ret = pthread_cancel(mid); //线程终止方式二：pthread_cancel可以新线程终止主线程
 
 //	pthread_exit((void*)222); //退出方式三
 	while(1)
@@ -49,10 +43,10 @@ void* Thread_1(void* arg)
 int main()
 {
 	pthread_t id;
-	
+	pthread_t mid;
 	int retval = 0;
 
-	int ret = pthread_create(&id, NULL, &Thread_1, &id);
+	int ret = pthread_create(&id, NULL, &Thread_1, &mid);
 	if(ret != 0)
 	{
 		perror("pthread_create");
