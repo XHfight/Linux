@@ -1,3 +1,6 @@
+//生产者消费者模型， 一个生产者一个消费者。
+//实现：利用单链表作为交易场所
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
