@@ -13,7 +13,8 @@
 int ringBuf[BUF_SIZE];
 
 //定义互斥锁
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t pro_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t con_lock = PTHREAD_MUTEX_INITIALIZER;
 
 //定义信号量
 sem_t blanks;
@@ -25,13 +26,13 @@ void* ProRun(void* arg)
 	while(1)
 	{
 		sem_wait(&blanks);
-		pthread_mutex_lock(&lock);
+		pthread_mutex_lock(&pro_lock);
 		int data = rand()%10000;
 		ringBuf[i] = data;
 		printf("producer data:%d\n", data);
 		i++;
 		i %= BUF_SIZE;
-		pthread_mutex_unlock(&lock);
+		pthread_mutex_unlock(&pro_lock);
 		sem_post(&datas);
 	}
 }
@@ -42,12 +43,12 @@ void* ConRun(void* arg)
 	while(1)
 	{
 		sem_wait(&datas);
-		pthread_mutex_lock(&lock);
+		pthread_mutex_lock(&con_lock);
 		int data = ringBuf[i];
 		printf("consumer data:%d\n", data);
 		i++;
 		i %= BUF_SIZE;
-		pthread_mutex_unlock(&lock);
+		pthread_mutex_unlock(&con_lock);
 		sem_post(&blanks);
 	}
 }
@@ -78,7 +79,7 @@ int main()
 	sem_destroy(&datas);
 
 	//解除互斥锁
-	pthread_mutex_destroy(&lock);
-//	pthread_mutex_destroy(&lock_con);
+	pthread_mutex_destroy(&pro_lock);
+	pthread_mutex_destroy(&con_lock);
 	return 0;
 }
