@@ -41,13 +41,12 @@ int Init(int port, const char *ip)
 
 int main(int argc, char *argv[])
 {
-	struct sockaddr_in cli_sock;
-
 	if(argc != 3)
 	{
-		printf("Usage:%s [PORT] [IP]");
+		printf("Usage: %s [local_PORT] [local_IP]\n", argv[0]);
 		return 1;
 	}
+	struct sockaddr_in cli_sock;
 
 	int listenfd = Init(atoi(argv[1]), argv[2]);
 	if(listenfd >= 0)

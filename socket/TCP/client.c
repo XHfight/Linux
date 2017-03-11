@@ -9,8 +9,7 @@ int main(int argc, char *argv[])
 {
 	if(argc != 3)
 	{
-		printf("Usage: %s [PORT] [IP]", argv[0]);
-	
+		printf("Usage: %s [server_PORT] [server_IP]\n", argv[0]);
 		return 1;
 	}
 
