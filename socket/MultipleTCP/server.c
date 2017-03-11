@@ -1,3 +1,5 @@
+//多进程实现一台服务器被多个进程连接
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
