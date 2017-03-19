@@ -149,11 +149,10 @@ int main(int argc, char *argv[])
 								close(conn_sock);
 							}
 						}
-						continue;
 					}
-					//处理其他
-					if(fd_arr[index] != -1 && FD_ISSET(fd_arr[index], &rfds))
-					{
+					else if(fd_arr[index] != -1 && FD_ISSET(fd_arr[index], &rfds))
+					{	
+						//处理读事件
 						char buf[1024];
 						ssize_t s = read(fd_arr[index], buf, sizeof(buf)-1);
 						if(s > 0)
@@ -164,10 +163,18 @@ int main(int argc, char *argv[])
 						else if(s == 0)
 						{
 							printf("client is quit!\n");
-							Remove_fd_arr(fd_arr[index]);
 							FD_CLR(fd_arr[index], &rfds);
+							Remove_fd_arr(fd_arr[index]);
 							close(fd_arr[index]);
 						}
+						else
+						{
+							perror("read");
+						}
+					}//else if
+					else
+					{
+						//处理其他
 					}
 				}
 			}
