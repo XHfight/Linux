@@ -10,8 +10,8 @@
 
 #define _SIZE_ 10
 
-int fd_arr[_SIZE_];
-int max_fd = 0;
+int fd_arr[_SIZE_]; //辅助数组，保存关心的文件描述符
+int max_fd = 0; //所有文件描述符中的最大值
 
 static void Init_fd_arr()
 {
@@ -22,6 +22,7 @@ static void Init_fd_arr()
 	}
 }
 
+//给辅助数组中添加文件描述符
 static int Add_fd_arr(int fd)
 {
 	int i = 0;
@@ -36,6 +37,7 @@ static int Add_fd_arr(int fd)
 	return 1;
 }
 
+//从辅助数组中删除文件描述符
 static int Remove_fd_arr(int fd)
 {
 	int i = 0;
@@ -50,6 +52,7 @@ static int Remove_fd_arr(int fd)
 	return 1;
 }
 
+//将辅助数组中的值设置到fd_set中，并计算出最大描述符的值
 static int Reload_fd_set(fd_set *set)
 {
 	assert(set);
