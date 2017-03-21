@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	}
 
 	struct epoll_event ev;
-	ev.events = EPOLLIN;
+	ev.events = EPOLLIN | EPOLLET;
 	ev.data.ptr = alloc_epbuf(listen_sock);
 	epoll_ctl(epfd, EPOLL_CTL_ADD, listen_sock, &ev);
 
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 							perror("accept");
 							continue;
 						}
-						struct epoll_event _ev;
+						
 						ev.events = EPOLLIN;
 						ev.data.ptr = alloc_epbuf(conn_sock);
 						epoll_ctl(epfd, EPOLL_CTL_ADD, conn_sock, &ev);
@@ -148,7 +148,6 @@ int main(int argc, char *argv[])
 					else if(fd != listen_sock && (evs[i].events & EPOLLOUT))
 					{
 						const char *msg = "HTTP/1.0 200 OK \r\n\r\n<html><h1>hello world! </h1></html>\n"; 
-						printf("write\n");
 						write(fd, msg, strlen(msg));
 						free_epbuf(evs[i].data.ptr);
 						evs[i].data.ptr = NULL;
