@@ -80,9 +80,18 @@ set showmatch
 set matchtime=5
 " 对应括号高亮的时间（单位是十分之一秒）
 
+"-------------------------------------------------------------------------------
+"			搜索设置
+"------------------------------------------------------------------------------
+set incsearch
+"在查找时输入字符过程中就高亮显示匹配点。然后回车跳到该匹配点。
+set ignorecase
+"忽略大小写
 set autowrite
 " 在切换buffer时自动保存当前文件
-
+set wrapscan
+"设置查找到文件尾部后折返开头或查找到开头后折返尾部。
+"--------------------------------------------------------------------------------
 set wildmenu
 " 增强模式中的命令行自动完成操作
 
@@ -118,6 +127,48 @@ au BufWrite /private/tmp/crontab.* set nowritebackup
 " Don't write backup file if vim is being called by "chpass"
 au BufWrite /private/etc/pw.* set nowritebackup
 
+
+"新建.c,.h,.sh,.java文件，自动插入文件头 
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java exec ":call SetTitle()" 
+""定义函数SetTitle，自动插入文件头 
+func SetTitle() 
+	"如果文件类型为.sh文件 
+	if expand("%:e") == 'sh' 
+		call setline(1,"\#########################################################################") 
+		call append(line("."), "\# File Name: ".expand("%")) 
+		call append(line(".")+1, "\# Author: XH") 
+		call append(line(".")+2, "\# mail: x_H_fight@163.com") 
+		call append(line(".")+3, "\# Created Time: ".strftime("%c")) 
+		call append(line(".")+4, "\#########################################################################") 
+		call append(line(".")+5, "\#!/bin/bash") 
+		call append(line(".")+6, "") 
+	else 
+		call setline(1, "/*************************************************************************") 
+		call append(line("."), "	> File Name: ".expand("%")) 
+		call append(line(".")+1, "	> Author: XH") 
+		call append(line(".")+2, "	> Mail: X_H_fight@163.com ") 
+		call append(line(".")+3, "	> Created Time: ".strftime("%c")) 
+		call append(line(".")+4, " ************************************************************************/") 
+		call append(line(".")+5, "")
+	endif
+	if expand("%:e") == 'cpp'
+		call append(line(".")+6, "#include<iostream>")
+		call append(line(".")+7, "using namespace std;")
+		call append(line(".")+8, "")
+	endif
+	if expand("%:e") == 'c'
+		call append(line(".")+6, "#include<stdio.h>")
+		call append(line(".")+7, "")
+	endif
+	"	if &filetype == 'java'
+	"		call append(line(".")+6,"public class ".expand("%"))
+	"		call append(line(".")+7,"")
+	"	endif
+	"自动定位到文件末尾
+	normal G
+	"从下一行开始插入
+	normal o
+endfunc
 
 "__________________________________________________________
 "                    插件配置
@@ -171,7 +222,9 @@ filetype plugin indent on     " required!
 " 自动补全配置
 set completeopt=longest,menu    "让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif    "离开插入模式后自动关闭预览窗口
-inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"    "回车即选中当前项
+"回车即选中当前项
+inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"    
+
 "上下左右键的行为 会显示其他信息
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
@@ -190,7 +243,7 @@ let g:ycm_min_num_of_chars_for_completion=2    " 从第2个键入字符就开始
 let g:ycm_cache_omnifunc=0    " 禁止缓存匹配项,每次都重新生成匹配项
 let g:ycm_seed_identifiers_with_syntax=1    " 语法关键字补全
 nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>    "force recomile with syntastic
-"nnoremap <leader>lo :lopen<CR>    "open locationlist
+nnoremap <leader>lo :lopen<CR>    "open locationlist
 "nnoremap <leader>lc :lclose<CR>    "close locationlist
 inoremap <leader><leader> <C-x><C-o>
 "在注释输入中也能补全
