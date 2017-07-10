@@ -8,6 +8,9 @@
 #include <sys/epoll.h>
 #include <string.h>
 
+//工作方式：LT（水平触发）
+//epoll的默认方式
+
 typedef struct epbuf
 {
 	int fd;
