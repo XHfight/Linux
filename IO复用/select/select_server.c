@@ -1,3 +1,10 @@
+/*************************************************************************
+	> File Name: select_server.c
+	> Author: XH
+	> Mail: X_H_fight@163.com 
+	> Created Time: 五  7/14 10:11:36 2017
+ ************************************************************************/
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -8,10 +15,10 @@
 #include <unistd.h>
 #include <sys/select.h>
 
-#define _SIZE_ 1024 //sizeof(fd_set)*8
+#define _SIZE_ 10
 
-int fd_arr[_SIZE_];  //保存文件被描述符的数组
-int max_fd = 0;
+int fd_arr[_SIZE_]; //辅助数组，保存关心的文件描述符
+int max_fd = 0; //所有文件描述符中的最大值
 
 static void Init_fd_arr()
 {
@@ -22,6 +29,7 @@ static void Init_fd_arr()
 	}
 }
 
+//给辅助数组中添加文件描述符
 static int Add_fd_arr(int fd)
 {
 	int i = 0;
@@ -36,6 +44,7 @@ static int Add_fd_arr(int fd)
 	return 1;
 }
 
+//从辅助数组中删除文件描述符
 static int Remove_fd_arr(int fd)
 {
 	int i = 0;
@@ -50,7 +59,7 @@ static int Remove_fd_arr(int fd)
 	return 1;
 }
 
-//将文件描述符重新设置进fd_set中并获取文件描述符的最大值
+//将辅助数组中的值设置到fd_set中，并计算出最大描述符的值
 static int Reload_fd_set(fd_set *set)
 {
 	assert(set);
@@ -79,9 +88,6 @@ int Startup(const char* ip, int port)
 		exit(2);
 	}
 
-	//客户端连着我，服务器端主动断开连接。
-	//四次挥手服务器处于timewait时间,服务器无法重启。这个连接没有被释放，ip地址和端口号仍然被占用。
-	//解决：复用端口号。保证服务器关掉后可以立即重启。
 	int opt = 1;
 	setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -121,7 +127,7 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		max_fd = Reload_fd_set(&rfds);
-		struct timeval timeout = {5, 0};//等待5秒
+		struct timeval timeout = {5, 0};
 
 		switch(select(max_fd+1, &rfds, NULL, NULL, &timeout))
 		{
@@ -132,7 +138,7 @@ int main(int argc, char *argv[])
 			perror("select");
 			break;
 		default:
-			{//至少有一个文件描述符就绪
+			{
 				int index = 0;
 				for( ; index < _SIZE_; ++index)
 				{
@@ -140,7 +146,6 @@ int main(int argc, char *argv[])
 					if(index == 0 && fd_arr[index] != -1 \
 							&& FD_ISSET(listen_sock, &rfds))
 					{
-						//listen_sock已经就绪
 						struct sockaddr_in peer;
 						socklen_t size = sizeof(peer);
 						int conn_sock = accept(listen_sock, \
@@ -154,16 +159,10 @@ int main(int argc, char *argv[])
 								close(conn_sock);
 							}
 						}
-						else
-						{
-							perror("accept");
-							continue;
-						}
 					}
 					else if(fd_arr[index] != -1 && FD_ISSET(fd_arr[index], &rfds))
 					{	
 						//处理读事件
-						//read有问题，这里先假定读的数据小于缓冲区大小。
 						char buf[1024];
 						ssize_t s = read(fd_arr[index], buf, sizeof(buf)-1);
 						if(s > 0)
@@ -194,3 +193,4 @@ int main(int argc, char *argv[])
 	}
 	return 0;
 } 
+
